@@ -1,0 +1,23 @@
+{
+  "kind": "vrai",
+  "full_name": "trovu/trovu",
+  "issue_number": 329,
+  "issue_title": "Open target URLs not in PWA but in default browser",
+  "issue_state": "open",
+  "issue_labels": [
+    "Type: enhancement",
+    "💰 Reward"
+  ],
+  "issue_created": "2024-03-17T20:45:36Z",
+  "issue_body_sample": "Currently, when [using Trovu from its PWA](https://trovu.net/docs/users/integration/#pwa-progressive-web-app), target URLs are opened within the PWA. Instead, they shall\n\n- open in the default browser of the device, if no app is linked to this URL (e.g. URLs to Google shall open in Chrome or Firefox or whatever the default browser is)\n- open in the matching app (e.g. links to Google Maps or Youtub",
+  "repo_fork": false,
+  "repo_stars": 76,
+  "repo_archived": false,
+  "repo_license": "AGPL-3.0",
+  "owner_login": "trovu",
+  "owner_created": "2018-04-14T10:15:42Z",
+  "owner_type": "Organization",
+  "_note": "Données publiques capturées via API GitHub le 2026-08-18 pour tests hors-ligne.",
+  "repo_created": "2018-04-14T10:21:47Z",
+  "paid_history": true
+}

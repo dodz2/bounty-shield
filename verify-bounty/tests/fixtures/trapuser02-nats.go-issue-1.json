@@ -1,0 +1,24 @@
+{
+  "kind": "piege",
+  "full_name": "trapuser02/nats.go",
+  "issue_number": 1,
+  "issue_title": "🎯 Prevent Goroutine and Ephemeral Consumer Leaks in `ObjectStore.Get` with Timeout-less Context during Server Unresponsiveness",
+  "issue_state": "closed",
+  "issue_labels": [
+    "bounty",
+    "opire",
+    "$10"
+  ],
+  "issue_created": "2026-08-18T07:00:10Z",
+  "issue_body_sample": "## 📝 Description\nWhen calling `ObjectStore.Get` (or `ObjectStore.GetContext`) using a context without a configured timeout (such as `context.Background()`), the client can leak goroutines and ephemeral consumers if the NATS server becomes unresponsive or disconnects mid-operation. \n\nUnder normal conditions, the ephemeral consumer created to fetch object chunks is cleaned up after the transfer comp",
+  "repo_fork": false,
+  "repo_stars": 0,
+  "repo_archived": false,
+  "repo_license": "",
+  "owner_login": "trapuser02",
+  "owner_created": "2026-08-18T05:12:34Z",
+  "owner_type": "User",
+  "_note": "Données publiques capturées via API GitHub le 2026-08-18 pour tests hors-ligne.",
+  "repo_created": "2026-08-18T06:59:50Z",
+  "paid_history": false
+}

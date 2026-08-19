@@ -1,0 +1,25 @@
+{
+  "kind": "piege",
+  "full_name": "trapuser04/sqlc",
+  "issue_number": 1,
+  "issue_title": "🎯 Fix: Nullable PostgreSQL UUID[] columns incorrectly mapped to non-nullable slices causing scan failures",
+  "issue_state": "closed",
+  "issue_labels": [
+    "bounty",
+    "opire",
+    "$20",
+    "💰 Reward"
+  ],
+  "issue_created": "2026-08-06T11:58:45Z",
+  "issue_body_sample": "## 📝 Description\nWhen generating Go code for PostgreSQL schemas containing nullable `UUID[]` (array of UUIDs) columns, `sqlc` incorrectly maps these columns to non-nullable slices (e.g., `[]uuid.UUID` instead of `*[]uuid.UUID` or a driver-specific nullable array wrapper). \n\nAt runtime, attempting to",
+  "repo_fork": false,
+  "repo_stars": 0,
+  "repo_archived": false,
+  "repo_license": "",
+  "owner_login": "trapuser04",
+  "owner_created": "2026-08-06T11:43:56Z",
+  "owner_type": "User",
+  "_note": "Donnees publiques capturees via API GitHub le 2026-08-18.",
+  "repo_created": "2026-08-06T11:58:14Z",
+  "paid_history": true
+}

@@ -1,0 +1,24 @@
+{
+  "kind": "piege",
+  "full_name": "trapuser01/caddy",
+  "issue_number": 1,
+  "issue_title": "🎯 Prevent empty request body when reverse_proxy retries failed upstream requests",
+  "issue_state": "closed",
+  "issue_labels": [
+    "bounty",
+    "opire",
+    "$10"
+  ],
+  "issue_created": "2026-08-18T10:02:14Z",
+  "issue_body_sample": "## 📝 Description\nWhen the `reverse_proxy` handler is configured to retry failed upstream requests (e.g., using `try_duration` or when multiple upstreams are defined and one fails), the request body is often sent as empty on subsequent retry attempts. \n\nThis happens because the HTTP request body (`io.ReadCloser`) is consumed during the first attempt. When the proxy round-tripper attempts to dispatc",
+  "repo_fork": false,
+  "repo_stars": 0,
+  "repo_archived": false,
+  "repo_license": "",
+  "owner_login": "trapuser01",
+  "owner_created": "2026-08-18T08:41:27Z",
+  "owner_type": "User",
+  "_note": "Données publiques capturées via API GitHub le 2026-08-18 pour tests hors-ligne.",
+  "repo_created": "2026-08-18T10:01:26Z",
+  "paid_history": false
+}

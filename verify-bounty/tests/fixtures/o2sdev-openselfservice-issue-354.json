@@ -1,0 +1,23 @@
+{
+  "kind": "vrai",
+  "full_name": "o2sdev/openselfservice",
+  "issue_number": 354,
+  "issue_title": "[Feature] an inline Filters component variant",
+  "issue_state": "closed",
+  "issue_labels": [
+    "enhancement",
+    "💰 Reward"
+  ],
+  "issue_created": "2025-11-14T11:26:49Z",
+  "issue_body_sample": "We'd like to enhance our existing `Filters` component by adding a new display variant that renders filters directly in the UI without requiring a drawer.\n\nCurrently, our `Filters` component (documented at [Storybook](https://storybook-o2s.openselfservice.com/?path=/docs/components-filters--docs)) only offers a version where:\n- There is a button that opens a drawer with filters\n- Optionally allows ",
+  "repo_fork": false,
+  "repo_stars": 180,
+  "repo_archived": false,
+  "repo_license": "MIT",
+  "owner_login": "o2sdev",
+  "owner_created": "2025-02-25T09:26:08Z",
+  "owner_type": "Organization",
+  "_note": "Données publiques capturées via API GitHub le 2026-08-18 pour tests hors-ligne.",
+  "repo_created": "2025-03-04T17:06:29Z",
+  "paid_history": true
+}

@@ -1,0 +1,40 @@
+# ─── Données privées : base et mémoire terrain ───────────────────────────
+# La base de données (traps/payers), la mémoire des comptes connus et la
+# watchlist de surveillance restent LOCALES, jamais publiées.
+# Le repo public expose l'OUTIL, pas la base ni la stratégie.
+# NB: verify-bounty/known.json (template VIDE) est commité — c'est la
+# structure légitime de l'outil, pas la base privée.
+watchlist.json
+threatdb/sources/candidates.json
+threatdb/sources/fixtures/
+threatdb/threats.json
+threatdb/sources/known.json
+
+# ─── Recherche privée / méthodologie ─────────────────────────────────────
+# Jamais publié : rapports de chasse, playbooks, prompts.
+chasse-*.txt
+*.txt
+research/
+playbooks/
+prompts/
+bounties/
+
+# ─── Secrets ─────────────────────────────────────────────────────────────
+.env
+.env.*
+*.pem
+*.key
+.ssh/
+id_*
+
+# ─── Python ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+
+# ─── Divers ──────────────────────────────────────────────────────────────
+.DS_Store
+*.log
+.tmp/

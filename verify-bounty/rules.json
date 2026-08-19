@@ -1,0 +1,32 @@
+{
+  "account_age_days_threshold": 30,
+  "account_age_band_young": 14,
+  "account_age_band_recent": 30,
+  "account_age_band_old": 90,
+  "stars_threshold": 0,
+  "issue_number_threshold": 1,
+  "min_amount_usd": 20,
+  "clone_gap_days": 7,
+  "liveness_stale_days": 90,
+  "suspicious_titles": ["🎯", "Fix:", "[BOUNTY]"],
+  "weights": {
+    "fork_check": 1,
+    "account_age": 10,
+    "stars_check": 10,
+    "issue_number": 5,
+    "amount_check": 2,
+    "pattern_check": 1,
+    "reward_link": 2,
+    "clone_check": 4,
+    "payment_history": 3,
+    "known_list": 10,
+    "repo_liveness": 4
+  },
+  "note_max": 10,
+  "verdicts": {
+    "vrai": 2.0,
+    "a_verifier": 4.9,
+    "piege": 4.7
+  },
+  "comment": "Seuils et poids de VerifyBounty. min_amount_usd <= seuil = suspect. clone_gap_days : ecart max compte->repo pour suspecter un clone. liveness_stale_days : inactivite (jours) avant de considerer un repo mort. Somme des poids = 52. Verdict PIEGE si note >= 4.7 (3 signaux forts = 4.81 -> PIEGE ; 2 signaux = 3.85 -> A_VERIFIER). Deux axes en sortie : authenticity (PIEGE/SANS_PREUVE/PAIEUR_PROUVE) + exploitability (LIBRE/CONTESTE/PRIS/INCONNU)."
+}

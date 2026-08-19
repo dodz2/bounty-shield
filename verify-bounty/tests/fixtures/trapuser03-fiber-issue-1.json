@@ -1,0 +1,24 @@
+{
+  "kind": "piege",
+  "full_name": "trapuser03/fiber",
+  "issue_number": 1,
+  "issue_title": "🎯 Restore/Buffer Request Body after Middleware Consumption to Prevent EOF in BodyParser",
+  "issue_state": "closed",
+  "issue_labels": [
+    "bounty",
+    "opire",
+    "$10"
+  ],
+  "issue_created": "2026-08-18T04:40:51Z",
+  "issue_body_sample": "## 📝 Description\nWhen a middleware (such as logging, audit, size-limit, or signature verification) reads the request body stream, the underlying stream is drained. Because Fiber (built on `fasthttp`) does not automatically buffer or restore the body stream after it is consumed via stream-based readers (e.g., `c.Request.BodyStream()`), subsequent calls to `c.BodyParser()`, `c.JSONParser()`, or the ",
+  "repo_fork": false,
+  "repo_stars": 0,
+  "repo_archived": false,
+  "repo_license": "",
+  "owner_login": "trapuser03",
+  "owner_created": "2026-08-18T03:33:13Z",
+  "owner_type": "User",
+  "_note": "Données publiques capturées via API GitHub le 2026-08-18 pour tests hors-ligne.",
+  "repo_created": "2026-08-18T04:40:31Z",
+  "paid_history": false
+}

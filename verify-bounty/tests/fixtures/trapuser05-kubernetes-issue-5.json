@@ -1,0 +1,25 @@
+{
+  "kind": "piege",
+  "full_name": "trapuser05/kubernetes",
+  "issue_number": 5,
+  "issue_title": "🎯 Fix Context Cancellation Propagation in API Server Watch Handlers to Prevent Resource Leaks on Client Disconnect",
+  "issue_state": "closed",
+  "issue_labels": [
+    "bounty",
+    "opire",
+    "$20",
+    "💰 Reward"
+  ],
+  "issue_created": "2026-08-07T14:07:59Z",
+  "issue_body_sample": "## 📝 Description\nWhen a client initiates a Kubernetes API watch request (e.g., GET `/api/v1/pods?watch=true`) and subsequently disconnects (e.g., due to network instability, client-side timeout, or process termination), the API server should immediately stop processing and serializing events for tha",
+  "repo_fork": false,
+  "repo_stars": 0,
+  "repo_archived": false,
+  "repo_license": "",
+  "owner_login": "trapuser05",
+  "owner_created": "2026-08-07T07:06:48Z",
+  "owner_type": "User",
+  "_note": "Donnees publiques capturees via API GitHub le 2026-08-18.",
+  "repo_created": "2026-08-07T13:02:34Z",
+  "paid_history": true
+}
