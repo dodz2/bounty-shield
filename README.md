@@ -1,30 +1,29 @@
 # Bounty-Shield — Vérif'Bounty
 
-**Détectez les faux bounties open source avant d'y investir votre temps.**
+**Detect fake open-source bounties before wasting your time on them.**
 
 ![CI](https://img.shields.io/github/actions/workflow/status/dodz2/bounty-shield/ci.yml?branch=main&label=CI)
 ![License](https://img.shields.io/github/license/dodz2/bounty-shield)
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
 
-Bounty-Shield analyse une issue GitHub portant un label de récompense et
-répond à deux questions indépendantes :
+Bounty-Shield analyzes a GitHub issue carrying a reward label and answers two
+independent questions:
 
-1. **AUTHENTICITÉ** — ce dépôt paie-t-il vraiment, ou est-ce un piège ?
-   → `PIÈGE` / `SANS_PREUVE` / `PAYEUR PROUVÉ`
-2. **EXPLOITABILITÉ** — ce bounty est-il encore gagnable ?
-   → `PRIS` / `CONTESTÉ` / `LIBRE` / `INCONNU`
+1. **AUTHENTICITY** — does this repository actually pay, or is it a trap?
+   → `TRAP` / `UNPROVEN` / `PROVEN PAYER`
+2. **EXPLOITABILITY** — is this bounty still winnable?
+   → `TAKEN` / `CONTESTED` / `OPEN` / `UNKNOWN`
 
-Zéro dépendance (Python standard ≥ 3.9). La détection repose sur des signaux
-observables publics (fork, étoiles, âge du compte, montant, titre,
-historique, vivacité du dépôt) et une **mémoire terrain** que vous alimentez
-via `--learn`.
+Zero dependencies (Python standard ≥ 3.9). Detection relies on publicly
+observable signals (fork, stars, account age, amount, title, history,
+repository liveness) plus a **field memory** you feed via `--learn`.
 
-## Pourquoi
+## Why
 
-Le 18/08/2026, nous avons identifié des « usines à faux bounties » : des
-comptes jetables déposent une issue unique sur des forks de dépôts populaires,
-affichent un montant fixe et un titre standardisé — pour faire travailler des
-agents IA **gratuitement**. Ce projet automatise leur détection.
+On 2026-08-18, we identified "fake bounty factories": throwaway accounts post
+a single issue on forks of popular repositories, advertise a fixed amount and
+a templated title — to get AI agents to work **for free**. This project
+automates their detection.
 
 ## Installation
 
@@ -34,99 +33,104 @@ cd bounty-shield/verify-bounty
 python3 verify_bounty.py --url https://github.com/owner/repo/issues/123
 ```
 
-## Utilisation
+## Usage
 
 ```bash
-# Analyser une issue GitHub (public, sans token ~8 cibles/h ; avec GH_TOKEN ~8000/h)
+# Analyze a GitHub issue (public API, no token ~8 targets/h; with GH_TOKEN ~8000/h)
 python3 verify_bounty.py --url https://github.com/owner/repo/issues/123
 
-# Sortie JSON stable pour intégration
+# Stable JSON output for integration
 python3 verify_bounty.py --url ... --json
 
-# Batch : une cible par ligne
-python3 verify_bounty.py --list cibles.txt
+# Batch: one target per line
+python3 verify_bounty.py --list targets.txt
 
-# Rapport d'audit Markdown + langue
-python3 verify_bounty.py --url ... --report rapport.md --lang fr|en
+# Markdown audit report + language
+python3 verify_bounty.py --url ... --report report.md --lang en|fr
 
-# Apprendre un piège confirmé (écrit dans known.json local)
-python3 verify_bounty.py --list cibles.txt --learn
+# Learn a confirmed trap (writes to local known.json)
+python3 verify_bounty.py --list targets.txt --learn
 ```
 
-### Options CLI
+### CLI options
 
-| Option | Effet |
+| Option | Effect |
 |---|---|
-| `--lang fr\|en` | langue d'affichage et du rapport (défaut `fr`) |
-| `--report FICHIER.md` | écrit une fiche d'audit Markdown |
-| `--learn` | enregistre les pièges confirmés (fiabilité ≥ 6) dans `known.json` |
-| `--quota` | affiche le quota API GitHub restant |
-| `--json` | sortie JSON stable (enveloppe `version 2`) |
+| `--lang en\|fr` | display/report language (default `en`) |
+| `--report FILE.md` | writes a Markdown audit report |
+| `--learn` | records confirmed traps (reliability ≥ 6) into `known.json` |
+| `--quota` | shows remaining GitHub API quota |
+| `--json` | stable JSON output (`version 2` envelope) |
 
 ### Exit codes
 
-- `0` : analyse réussie / batch sans erreur
-- `1` : erreur d'utilisation
-- `2` : batch `--list` avec au moins une cible en erreur
+- `0` : analysis succeeded / batch without errors
+- `1` : usage error
+- `2` : batch `--list` with at least one target in error
 
-## Exemple de sortie
+## Example output
 
 ```text
 ============================================================
-Cible : trapuser01/caddy #1
-Titre : 🎯 Prevent empty request body when reverse_proxy retries failed upstream requests
+Target : trapuser01/caddy #1
+Title : 🎯 Prevent empty request body when reverse_proxy retries failed upstream requests
 ------------------------------------------------------------
-CONFIANCE AUTHENTICITÉ : 2.9/10   (note de risque 7.1/10)
-AUTHENTICITÉ  : 🚨 PIÈGE  — Note de risque 7.1/10 ≥ 4.7/10 (piège détecté, historique possiblement forgé)
-EXPLOITABILITÉ: 🔒 PRIS  — Issue fermée (terminée)
-Fiabilité du verdict : 8/10
-Recommandation : Ne pas engager de travail sur ce bounty. Signaux : account_age, stars_check, issue_number, amount_check, pattern_check, reward_link, clone_check, payment_history.
+AUTHENTICITY CONFIDENCE : 2.9/10   (risk score 7.1/10)
+AUTHENTICITY  : 🚨 TRAP  — Risk score 7.1/10 ≥ 4.7/10 (trap detected, possibly forged history)
+EXPLOITABILITY: 🔒 TAKEN  — Issue closed (finished)
+Verdict reliability : 8/10
+Recommendation : Do not engage work on this bounty. Signals: account_age, stars_check, issue_number, amount_check, pattern_check, reward_link, clone_check, payment_history.
 ------------------------------------------------------------
-  ✅ fork_check       ×1  Le dépôt est un fork: False
-  🛑 account_age      ×10  Compte très récent (2 j < 14 j) — fort signal
-  🛑 stars_check      ×10  0 étoile(s) (seuil: 0)
-  🛑 issue_number     ×5  Issue #1 (seuil: #1)
-  🛑 amount_check     ×2  Montant annoncé: 10.0 USD (seuil: 20 équivalent-unité) — 🛑
-  🛑 pattern_check    ×1  Titre commence par « 🎯 »
-  🛑 reward_link      ×2  Label récompense sans lien vérifiable (vérification non effectuée)
-  🛑 clone_check      ×4  Repo créé 0 j après le compte (seuil: 7 j)
-  🛑 payment_history  ×3  Revendique une récompense mais aucun historique de paiement
-  ✅ known_list       ×10  Aucune entrée en mémoire terrain (neutre)
-  ✅ repo_liveness    ×4  Date de dernier push inconnue (neutre)
+  ✅ fork_check       ×1  The repository is a fork: False
+  🛑 account_age      ×10  Account very recent (2 d < 14 d) — strong signal
+  🛑 stars_check      ×10  0 star(s) (threshold: 0)
+  🛑 issue_number     ×5  Issue #1 (threshold: #1)
+  🛑 amount_check     ×2  Advertised amount: 10.0 USD (threshold: 20 unit-equivalent) — 🛑
+  🛑 pattern_check    ×1  Title starts with "🎯"
+  🛑 reward_link      ×2  Reward label without verifiable link (verification not performed)
+  🛑 clone_check      ×4  Repo created 0 d after account (threshold: 7 d)
+  🛑 payment_history  ×3  Claims a reward but has no payment history
+  ✅ known_list       ×10  No entry in field memory (neutral)
+  ✅ repo_liveness    ×4  Last push date unknown (neutral)
 ============================================================
 ```
 
-## Les 11 vérifications
+## The 11 checks
 
-`fork_check` · `account_age` (gradué) · `stars_check` · `issue_number` ·
-`amount_check` (multi-devises) · `pattern_check` · `reward_link`
-(multi-plateformes) · `clone_check` · `payment_history` · `known_list` ·
+`fork_check` · `account_age` (graduated) · `stars_check` · `issue_number` ·
+`amount_check` (multi-currency) · `pattern_check` · `reward_link`
+(multi-platform) · `clone_check` · `payment_history` · `known_list` ·
 `repo_liveness`.
 
-La note de risque (0-10) agrège ces signaux pondérés (seuils dans
-`rules.json`), puis l'**authenticité** et l'**exploitabilité** en sont dérivées.
+The risk score (0-10) aggregates these weighted signals (thresholds in
+`rules.json`), then **authenticity** and **exploitability** are derived.
 
-## Mémoire terrain (`known.json`)
+## Field memory (`known.json`)
 
-- `known_traps` : comptes pièges identifiés → verdict PIÈGE forcé.
-- `known_payers` : dépôts ayant réellement payé → verdict PAYEUR PROUVÉ forcé.
+- `known_traps_hashes` : SHA-256 hashes of identified trap accounts → forces
+  a TRAP verdict. **Stored as hashes, never in plain text** — the private
+  threat database is never disclosed.
+- `known_payers_hashes` : SHA-256 hashes of repositories that actually paid →
+  forces a PROVEN PAYER verdict.
+- `known_traps` / `known_payers` : optional plain-text fields, used by local
+  `--learn`. Backward compatible.
 
-Le repo embarque un `known.json` **vide** (template). Alimentez-le via
-`--learn` ou avec vos propres données. La base de données Daedalus reste
-privée et n'est pas publiée ici.
+The tool compares hashes at runtime; it never needs the account names in
+plain text to flag a trap. The full database (real account names) is kept
+private and is not published here.
 
 ## Tests
 
 ```bash
 python3 -m unittest discover -s tests -q
-# 65 tests verts, zéro dépendance
+# 68 tests passing, zero dependencies
 ```
 
-## Licence
+## License
 
-MIT — voir `LICENSE`.
+MIT — see `LICENSE`.
 
-## Avertissement
+## Disclaimer
 
-Outil d'aide à la décision : il produit une **probabilité**, pas une
-certitude. Toujours lire l'issue et ses commentaires avant de vous engager.
+Decision-support tool: it produces a **probability**, not a certainty.
+Always read the issue and its comments before committing your time.
