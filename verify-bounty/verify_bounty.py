@@ -241,13 +241,22 @@ def load_target(path: str) -> dict:
 
 # --- Apprentissage mémoire terrain (item 8) ----------------------------
 # Avec --learn, un verdict PIÈGE confirmé (confiance >= 6) ajoute le compte
-# propriétaire à known.json (known_traps). Non destructif : refuse d'ajouter
+# propriétaire à known.json, en HASH SHA-256 (known_traps_hashes) pour ne
+# jamais divulguer les comptes en clair. Non destructif : refuse d'ajouter
 # un payeur connu. Utiliser avec précaution — c'est une écriture sur disque.
+
+import hashlib as _hashlib
+
+
+def _sha256(text: str) -> str:
+    return _hashlib.sha256(text.strip().lower().encode("utf-8")).hexdigest()
+
 
 def learn_from_piege(data: dict, result: dict) -> bool:
     """Enregistre le compte propriétaire comme piège si le verdict est net.
 
     Critères : authenticity == PIEGE, fiabilité >= 6, et compte non déjà piégé.
+    Écrit le HASH du compte (known_traps_hashes), jamais le login en clair.
     Retourne True si une écriture a eu lieu, False sinon.
     """
     known_path = Path(__file__).parent / "known.json"
@@ -261,13 +270,14 @@ def learn_from_piege(data: dict, result: dict) -> bool:
         return False
 
     known = json.loads(known_path.read_text(encoding="utf-8"))
-    traps = [str(x).lower() for x in known.get("known_traps", [])]
-    payers = [str(x).lower() for x in known.get("known_payers", [])]
-    # L'usine est un pattern par-compte : on enregistre le login du propriétaire
-    # (convention known.json), jamais le full_name (trop restrictif).
-    if owner.lower() in payers or owner.lower() in traps:
+    traps_clear = {str(x).lower() for x in known.get("known_traps", [])}
+    payers_clear = {str(x).lower() for x in known.get("known_payers", [])}
+    traps_hash = set(known.get("known_traps_hashes", []))
+    # L'usine est un pattern par-compte : on enregistre le hash du login.
+    owner_hash = _sha256(owner)
+    if owner.lower() in payers_clear or owner.lower() in traps_clear or owner_hash in traps_hash:
         return False
-    known["known_traps"] = sorted(set(traps + [owner]), key=str.lower)
+    known["known_traps_hashes"] = sorted(traps_hash | {owner_hash})
     known_path.write_text(json.dumps(known, ensure_ascii=False, indent=2), encoding="utf-8")
     return True
 

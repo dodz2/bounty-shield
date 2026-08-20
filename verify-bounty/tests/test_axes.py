@@ -110,7 +110,7 @@ class TestAuthenticity(unittest.TestCase):
         self.assertEqual(result["authenticity"]["status"], "PIEGE")
 
     def test_piege_a_historique_forge_reste_piege(self):
-        """Usine qui simule un paid_history (trapuser04) : la note de risque prime."""
+        """Usine qui simule un paid_history : la note de risque prime."""
         data = _base(
             owner_created="2026-08-05T10:00:00Z", repo_stars=0,
             issue_number=1, issue_title="🎯 Fix: x",

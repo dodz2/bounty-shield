@@ -103,7 +103,7 @@ def build_authenticity(data: dict, result: dict, rules: dict) -> dict:
     merged_pr = bool(data.get("merged_pr_for_issue"))
 
     # PRÉCÉDENCE : un piège (forcé OU note de risque élevée) l'emporte TOUJOURS
-    # sur toute preuve de paiement — l'usine forge des historiques (trapuser04).
+    # sur toute preuve de paiement — l'usine forge des historiques.
     if forced == "PIEGE":
         return {"status": "PIEGE", "detail": "Forcé par la mémoire terrain (compte piège)"}
     if note >= rules["verdicts"]["piege"]:

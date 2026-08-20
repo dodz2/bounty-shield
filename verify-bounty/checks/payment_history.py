@@ -1,7 +1,7 @@
 # Vérification 10 — Historique de paiement
 # Un dépôt qui a déjà des issues fermées avec label « 💰 Reward » a un
 # historique de récompenses. IMPORTANT : l'usine peut simuler cet historique
-# (constaté sur trapuser04/sqlc et trapuser05/kubernetes) — ce check n'est
+# (constaté sur des comptes de l'usine) — ce check n'est
 # donc qu'une couche de nuance, jamais une preuve à lui seul.
 # Score :
 #   - paid_history=True (issues Reward fermées)  -> 0 point (indice de confiance)

@@ -68,7 +68,7 @@ d'un verdict unique ambigu :
 | ✅ **PAIEUR_PROUVE** | preuve de paiement (historique / dépôt connu / PR fusionnée) |
 
 **Précédence** : un piège (forcé ou note de risque élevée) l'emporte TOUJOURS
-sur une preuve de paiement — car l'usine forge des historiques (trapuser04).
+sur une preuve de paiement — car l'usine forge des historiques.
 
 ### Axe 2 — EXPLOITABILITÉ (le bounty est-il encore gagnable ?)
 
@@ -116,8 +116,17 @@ l'issue (ouvertes vs fusionnées) pour alimenter l'axe EXPLOITABILITÉ.
 
 ## Mémoire terrain (`known.json`)
 
-- `known_traps` : comptes de l'usine identifiés → verdict PIÈGE forcé.
-- `known_payers` : dépôts ayant réellement payé → verdict VRAI forcé.
+- `known_traps_hashes` : hashs SHA-256 des comptes de l'usine identifiés →
+  verdict PIÈGE forcé. **Stockés en hash, jamais en clair** — la base de
+  données des pièges reste privée (non-divulgation).
+- `known_payers_hashes` : hashs SHA-256 des dépôts ayant réellement payé →
+  verdict PAYEUR PROUVÉ forcé.
+- `known_traps` / `known_payers` : champs **en clair** (optionnels), utilisés
+  par le `--learn` local. Rétro-compatibles.
+
+L'outil compare les hashs à l'exécution ; il n'a pas besoin de connaître les
+noms en clair pour détecter un piège. La base complète (les noms des comptes)
+est conservée côté Daedalus, jamais publiée ici.
 
 Mettre à jour au fil des découvertes. Les tests prouvent que les pièges
 NON listés sont détectés par les seuls checks (robustesse).
@@ -133,7 +142,7 @@ En mode fixture, renseigner `reward_verified` (true/false/null) par fixture.
 
 Le collecteur compte les issues fermées avec label `💰 Reward` (requête
 `search` GitHub). ⚠️ **L'usine peut simuler cet historique** (constaté sur
-`trapuser04/sqlc` et `trapuser05/kubernetes`) : ce signal n'est qu'une
+des comptes de l'usine) : ce signal n'est qu'une
 couche de nuance, jamais une preuve à lui seul.
 
 ## Limites connues (importantes)

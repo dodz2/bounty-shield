@@ -91,7 +91,10 @@ class TestApprentissage(unittest.TestCase):
         ok = verify_bounty.learn_from_piege(data, result)
         self.assertTrue(ok)
         known = json.loads(self.known_path.read_text(encoding="utf-8"))
-        self.assertIn("usinex", known["known_traps"])
+        # le compte est stocké en HASH, jamais en clair
+        self.assertNotIn("usinex", known.get("known_traps", []))
+        expected_hash = verify_bounty._sha256("usinex")
+        self.assertIn(expected_hash, known.get("known_traps_hashes", []))
 
     def test_payeur_jamais_appris_comme_piege(self):
         data = _base(owner_login="o2sdev")  # payeur connu
