@@ -2,6 +2,10 @@
 
 **Détectez les faux bounties open source avant d'y investir votre temps.**
 
+![CI](https://img.shields.io/github/actions/workflow/status/dodz2/bounty-shield/ci.yml?branch=main&label=CI)
+![License](https://img.shields.io/github/license/dodz2/bounty-shield)
+![Python](https://img.shields.io/badge/python-3.9%2B-blue)
+
 Bounty-Shield analyse une issue GitHub portant un label de récompense et
 répond à deux questions indépendantes :
 
@@ -10,7 +14,7 @@ répond à deux questions indépendantes :
 2. **EXPLOITABILITÉ** — ce bounty est-il encore gagnable ?
    → `PRIS` / `CONTESTÉ` / `LIBRE` / `INCONNU`
 
-Zéro dépendance (Python standard). La détection repose sur des signaux
+Zéro dépendance (Python standard ≥ 3.9). La détection repose sur des signaux
 observables publics (fork, étoiles, âge du compte, montant, titre,
 historique, vivacité du dépôt) et une **mémoire terrain** que vous alimentez
 via `--learn`.
@@ -64,6 +68,33 @@ python3 verify_bounty.py --list cibles.txt --learn
 - `0` : analyse réussie / batch sans erreur
 - `1` : erreur d'utilisation
 - `2` : batch `--list` avec au moins une cible en erreur
+
+## Exemple de sortie
+
+```text
+============================================================
+Cible : trapuser01/caddy #1
+Titre : 🎯 Prevent empty request body when reverse_proxy retries failed upstream requests
+------------------------------------------------------------
+CONFIANCE AUTHENTICITÉ : 2.9/10   (note de risque 7.1/10)
+AUTHENTICITÉ  : 🚨 PIÈGE  — Note de risque 7.1/10 ≥ 4.7/10 (piège détecté, historique possiblement forgé)
+EXPLOITABILITÉ: 🔒 PRIS  — Issue fermée (terminée)
+Fiabilité du verdict : 8/10
+Recommandation : Ne pas engager de travail sur ce bounty. Signaux : account_age, stars_check, issue_number, amount_check, pattern_check, reward_link, clone_check, payment_history.
+------------------------------------------------------------
+  ✅ fork_check       ×1  Le dépôt est un fork: False
+  🛑 account_age      ×10  Compte très récent (2 j < 14 j) — fort signal
+  🛑 stars_check      ×10  0 étoile(s) (seuil: 0)
+  🛑 issue_number     ×5  Issue #1 (seuil: #1)
+  🛑 amount_check     ×2  Montant annoncé: 10.0 USD (seuil: 20 équivalent-unité) — 🛑
+  🛑 pattern_check    ×1  Titre commence par « 🎯 »
+  🛑 reward_link      ×2  Label récompense sans lien vérifiable (vérification non effectuée)
+  🛑 clone_check      ×4  Repo créé 0 j après le compte (seuil: 7 j)
+  🛑 payment_history  ×3  Revendique une récompense mais aucun historique de paiement
+  ✅ known_list       ×10  Aucune entrée en mémoire terrain (neutre)
+  ✅ repo_liveness    ×4  Date de dernier push inconnue (neutre)
+============================================================
+```
 
 ## Les 11 vérifications
 
