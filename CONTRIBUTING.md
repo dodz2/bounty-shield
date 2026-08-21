@@ -1,40 +1,40 @@
-# Contribuer à Bounty-Shield
+# Contributing to Bounty-Shield
 
-Merci de vouloir améliorer Bounty-Shield. Ce projet est conçu pour être
-simple, fiable et sans dépendance — respectez ces principes dans vos
+Thanks for wanting to improve Bounty-Shield. This project is designed to be
+simple, reliable and dependency-free — please respect these principles in your
 contributions.
 
-## Environnement
+## Environment
 
-- **Python ≥ 3.9**, zéro dépendance externe (stdlib uniquement).
-- Tests : `unittest` (aucun framework tiers).
+- **Python ≥ 3.9**, zero external dependency (stdlib only).
+- Tests: `unittest` (no third-party framework).
 
 ```bash
 cd verify-bounty
 python3 -m unittest discover -s tests -q
 ```
 
-## Comment contribuer
+## How to contribute
 
-1. **Fork** le dépôt, créez une branche dédiée (`git switch -c feature/...`).
-2. **Codez** en respectant le style existant (docstrings, commentaires FR).
-3. **Ajoutez des tests** pour toute nouvelle fonctionnalité ou correction.
-4. **Vérifiez** que la suite passe : `python3 -m unittest discover -s tests -q`.
-5. **Ouvrez une Pull Request** avec une description claire :
-   - le problème résolu,
-   - l'approche,
-   - les tests ajoutés.
+1. **Fork** the repository, create a dedicated branch (`git switch -c feature/...`).
+2. **Code** following the existing style (docstrings, clear comments).
+3. **Add tests** for any new feature or fix.
+4. **Verify** the suite passes: `python3 -m unittest discover -s tests -q`.
+5. **Open a Pull Request** with a clear description:
+   - the problem solved,
+   - the approach,
+   - the tests added.
 
-## Règles
+## Rules
 
-- **Zéro dépendance** : n'ajoutez pas de package externe sans justification.
-- **Ne divulguez pas la base** : le fichier `known.json` embarque des hashs
-  SHA-256 de comptes. Ne le remplacez jamais par des noms en clair, et ne
-  publiez pas de données de chasse dans les issues/PR.
-- **Compatibilité** : le code doit rester compatible Python 3.9+.
-- **Tests** : toute PR doit laisser la suite au vert (CI en dépend).
+- **Zero dependency**: do not add an external package without justification.
+- **Do not disclose the database**: the `known.json` file embeds SHA-256
+  hashes of accounts. Never replace it with plain-text names, and never
+  publish hunting data in issues/PRs.
+- **Compatibility**: the code must stay compatible with Python 3.9+.
+- **Tests**: any PR must keep the suite green (CI depends on it).
 
-## Signaler un bug
+## Reporting a bug
 
-Ouvrez une issue avec : la commande exécutée, la sortie obtenue, la sortie
-attendue. Pour les problèmes de sécurité, voir `SECURITY.md`.
+Open an issue with: the command run, the output obtained, the expected output.
+For security issues, see `SECURITY.md`.

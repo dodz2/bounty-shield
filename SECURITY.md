@@ -1,43 +1,42 @@
-# Politique de sécurité
+# Security Policy
 
-Bounty-Shield analyse des issues GitHub publiques. La **sécurité** et la
-**confidentialité** sont des priorités : le projet manipule une base de
-comptes suspects stockée en hash, jamais en clair.
+Bounty-Shield analyzes public GitHub issues. **Security** and
+**confidentiality** are priorities: the project handles a database of
+suspicious accounts stored as hashes, never in plain text.
 
-## Périphérique / non-objet de ce programme
+## Scope / non-scope
 
-- Ceci **n'est pas** un programme de bug bounty payant.
-- Le dépôt n'accepte pas de récompense monétaire pour des signalements.
+- This is **not** a paid bug bounty program.
+- The repository does not offer monetary rewards for reports.
 
-## Ce qu'il faut signaler
+## What to report
 
-- Une **fuite de données privées** : un nom de compte réel, une donnée de
-  chasse, ou un secret exposé dans le code, le `known.json` ou l'historique.
-- Une **faille** permettant de contourner la détection des faux bounties.
-- Une **injection** ou une exécution de code non prévue via les entrées
-  (URL, fichier `--list`, `--report`).
+- A **private data leak**: a real account name, hunting data, or a secret
+  exposed in the code, `known.json`, or the history.
+- A **flaw** allowing the detection of fake bounties to be bypassed.
+- An **injection** or unintended code execution via inputs (URL, `--list`
+  file, `--report`).
 
-## Comment signaler
+## How to report
 
-Ouvrez une **issue privée** (sélectionnez « Security » dans le modèle, ou
-contactez le mainteneur via GitHub) **sans exposer publiquement** la faille
-avant qu'elle soit corrigée.
+Open a **private issue** (select "Security" in the template, or contact the
+maintainer via GitHub) **without publicly exposing** the vulnerability before
+it is fixed.
 
-Incluez :
-- le type de problème,
-- les étapes pour le reproduire,
-- l'impact potentiel,
-- (si possible) une suggestion de correctif.
+Include:
+- the type of problem,
+- steps to reproduce,
+- the potential impact,
+- (if possible) a suggested fix.
 
-## Engagement
+## Commitment
 
-- Accusé de réception sous **48 h**.
-- Analyse et réponse sous **7 jours**.
-- Publication coordonnée : la faille n'est rendue publique qu'après
-  correction.
+- Acknowledgment within **48 h**.
+- Analysis and response within **7 days**.
+- Coordinated disclosure: the vulnerability is only made public after a fix.
 
-## Note de non-divulgation
+## Non-disclosure note
 
-La base `known.json` contient des **hashs SHA-256** de comptes suspects —
-jamais les noms en clair. Toute régression vers un stockage en clair est
-considérée comme un problème de sécurité critique.
+The `known.json` database contains **SHA-256 hashes** of suspicious accounts —
+never the plain-text names. Any regression toward plain-text storage is
+considered a critical security issue.

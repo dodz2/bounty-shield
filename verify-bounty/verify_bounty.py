@@ -338,16 +338,16 @@ def write_report(data: dict, result: dict, path: str, lang: str = "fr") -> None:
 
 
 def main():
-    p = argparse.ArgumentParser(description="Vérif'Bounty — détecteur de faux bounties")
-    p.add_argument("--fixture", help="fichier JSON de données (tests)")
-    p.add_argument("--url", help="URL d'une issue GitHub")
-    p.add_argument("--all-fixtures", action="store_true", help="scanne toutes les fixtures")
-    p.add_argument("--list", metavar="FICHIER", help="batch : une cible par ligne (URL ou fixture)")
-    p.add_argument("--json", action="store_true", help="sortie JSON (intégration)")
-    p.add_argument("--lang", default="fr", choices=["fr", "en"], help="langue d'affichage et du rapport")
-    p.add_argument("--report", metavar="FICHIER.md", help="génère un rapport d'audit Markdown")
-    p.add_argument("--learn", action="store_true", help="écrit les pièges confirmés dans known.json")
-    p.add_argument("--quota", action="store_true", help="affiche le quota API GitHub puis sort")
+    p = argparse.ArgumentParser(description="Bounty-Shield — fake bounty detector")
+    p.add_argument("--fixture", help="JSON data file (tests)")
+    p.add_argument("--url", help="GitHub issue URL")
+    p.add_argument("--all-fixtures", action="store_true", help="scan all fixtures")
+    p.add_argument("--list", metavar="FILE", help="batch: one target per line (URL or fixture)")
+    p.add_argument("--json", action="store_true", help="JSON output (integration)")
+    p.add_argument("--lang", default="en", choices=["fr", "en"], help="display/report language (default en)")
+    p.add_argument("--report", metavar="FILE.md", help="write a Markdown audit report")
+    p.add_argument("--learn", action="store_true", help="record confirmed traps into known.json")
+    p.add_argument("--quota", action="store_true", help="show remaining GitHub API quota then exit")
     args = p.parse_args()
 
     if args.quota:
@@ -399,7 +399,7 @@ def main():
     elif args.url:
         data = collect_from_url(args.url)
     else:
-        p.error("préciser --fixture, --url, --all-fixtures ou --list")
+        p.error("specify --fixture, --url, --all-fixtures or --list")
 
     result = score(data, rules)
     if args.learn:

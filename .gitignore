@@ -2,8 +2,8 @@
 # La base de données (traps/payers), la mémoire des comptes connus et la
 # watchlist de surveillance restent LOCALES, jamais publiées.
 # Le repo public expose l'OUTIL, pas la base ni la stratégie.
-# NB: verify-bounty/known.json (template VIDE) est commité — c'est la
-# structure légitime de l'outil, pas la base privée.
+# NB: verify-bounty/known.json est commité en HASH SHA-256 (non-divulgation) —
+# la base en clair (noms des comptes) reste dans le repo privé.
 watchlist.json
 threatdb/sources/candidates.json
 threatdb/sources/fixtures/

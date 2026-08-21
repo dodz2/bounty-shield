@@ -1,160 +1,154 @@
-# Vérif'Bounty — détecteur de faux bounties
+# Bounty-Shield — Vérif'Bounty
 
-Outil interne du projet Daedalus Bounties. Analyse un bounty (issue GitHub)
-et répond **VRAI**, **À VÉRIFIER** ou **PIÈGE**, avec une note sur 10, en
-pesant chaque indice et en s'appuyant sur une mémoire terrain.
+Analyzes a GitHub issue carrying a reward label and answers **TRAP** /
+**UNPROVEN** / **PROVEN PAYER**, with a 0-10 risk score, weighing each signal
+and using a field memory.
 
-Dev : branche `feature/verify-bounty`. Zéro dépendance (Python standard).
+Zero dependencies (Python standard ≥ 3.9).
 
-## Pourquoi
+## Why
 
-Le 18/08/2026, une « usine à faux bounties » a été identifiée : des comptes
-créés le jour même posent des issues `#1` « 🎯 Fix… » avec un label
-`opire $10` sur des copies de dépôts populaires (caddy, traefik, kubernetes…),
-0 étoile, sans licence. But probable : faire travailler des agents IA
-gratuitement. Vérif'Bounty automatise la détection.
+On 2026-08-18 we identified "fake bounty factories": throwaway accounts post a
+single `#1` "🎯 Fix…" issue labeled `opire $10` on copies of popular
+repositories (caddy, traefik, kubernetes…), 0 stars, no license. Likely goal:
+get AI agents to work **for free**. This tool automates their detection.
 
-## Utilisation
+## Usage
 
 ```bash
-# Depuis verify-bounty/
+# From verify-bounty/
 python3 verify_bounty.py --url https://github.com/owner/repo/issues/123
-python3 verify_bounty.py --fixture tests/fixtures/<fichier>.json
+python3 verify_bounty.py --fixture tests/fixtures/<file>.json
 python3 verify_bounty.py --all-fixtures
-python3 verify_bounty.py --list liste.txt          # batch : une cible par ligne
-python3 verify_bounty.py --url ... --json          # sortie JSON (intégration, version "2")
-python3 verify_bounty.py --lang en                 # rapport en anglais
-python3 verify_bounty.py --url ... --report rapport.md   # fiche d'audit Markdown
-python3 verify_bounty.py --list cibles.txt --learn # écrit les pièges confirmés dans known.json
-python3 verify_bounty.py --quota                   # quota API restant
+python3 verify_bounty.py --list targets.txt        # batch: one target per line
+python3 verify_bounty.py --url ... --json          # stable JSON output (version "2")
+python3 verify_bounty.py --lang en                 # report in English
+python3 verify_bounty.py --url ... --report report.md   # Markdown audit report
+python3 verify_bounty.py --list targets.txt --learn # record confirmed traps into known.json
+python3 verify_bounty.py --quota                   # remaining API quota
 ```
 
-Mode `--url` : interroge l'API publique GitHub. **Quota : ~60 requêtes/h sans
-`GH_TOKEN`** (une cible coûte ~6-7 requêtes : repo, user, issue, search
-rewards, commentaires, PR) → **~8 cibles/h en mode public, ~8 000 avec
-`GH_TOKEN`**. Le débit est géré avec retry/backoff automatiques sur
-403/429/5xx et erreurs réseau. `--quota` affiche le restant avant de travailler.
-Mode `--list` : fichier avec une cible par ligne (URL GitHub ou chemin de
-fixture JSON) → une ligne de verdict par cible ; **exit code 2** si des cibles
-échouent, 0 sinon.
+`--url` mode queries the public GitHub API. **Quota: ~60 requests/h without
+`GH_TOKEN`** (one target costs ~6-7 requests: repo, user, issue, rewards
+search, comments, PR) → **~8 targets/h in public mode, ~8000 with `GH_TOKEN`**.
+Rate limiting is handled with automatic retry/backoff on 403/429/5xx and
+network errors. `--quota` shows the remaining budget before working.
+`--list` mode: one target per line (GitHub URL or fixture path) → one verdict
+line per target; **exit code 2** if any target fails, 0 otherwise.
 
-### Options CLI (items 7-11)
+### CLI options
 
-| Option | Effet |
+| Option | Effect |
 |---|---|
-| `--lang fr\|en` | langue d'affichage et du rapport (défaut `fr`) |
-| `--report FICHIER.md` | écrit une fiche d'audit Markdown (produit) |
-| `--learn` | enregistre les pièges confirmés (fiabilité ≥ 6) dans `known.json` |
-| `--quota` | affiche le quota API GitHub puis sort |
-| `--json` | sortie JSON stable avec enveloppe `{"version": "2", ...}` |
+| `--lang en\|fr` | display/report language (default `en`) |
+| `--report FILE.md` | writes a Markdown audit report |
+| `--learn` | records confirmed traps (reliability ≥ 6) into `known.json` |
+| `--quota` | shows remaining GitHub API quota then exits |
+| `--json` | stable JSON output (`version 2` envelope) |
 
-### Exit codes (item 10)
+### Exit codes
 
-- `0` : analyse réussie (mode simple) ou batch sans erreur
-- `1` : erreur d'utilisation (argparse)
-- `2` : batch `--list` avec au moins une cible en erreur
+- `0` : analysis succeeded / batch without errors
+- `1` : usage error (argparse)
+- `2` : batch `--list` with at least one target in error
 
-## Verdicts — deux axes (2026-08-19)
+## Two-axis verdict
 
-Depuis la refonte, chaque analyse produit **deux axes indépendants** au lieu
-d'un verdict unique ambigu :
+Each analysis produces **two independent axes** instead of a single ambiguous
+verdict:
 
-### Axe 1 — AUTHENTICITÉ (le dépôt paie-t-il vraiment ?)
+### Axis 1 — AUTHENTICITY (does the repository actually pay?)
 
-| Status | Signification |
+| Status | Meaning |
 |---|---|
-| 🚨 **PIÈGE** | forte suspicion d'usine à faux bounties — ne pas travailler |
-| ⚠️ **SANS_PREUVE** | pas piégé, mais AUCUNE preuve de paiement vérifiée |
-| ✅ **PAIEUR_PROUVE** | preuve de paiement (historique / dépôt connu / PR fusionnée) |
+| 🚨 **TRAP** | strong suspicion of a fake bounty factory — do not work |
+| ⚠️ **UNPROVEN** | not trapped, but NO verified payment proof |
+| ✅ **PROVEN_PAYER** | payment proof (history / known repo / merged PR) |
 
-**Précédence** : un piège (forcé ou note de risque élevée) l'emporte TOUJOURS
-sur une preuve de paiement — car l'usine forge des historiques.
+**Precedence**: a trap (forced or high risk score) always wins over payment
+proof — factories forge payment history.
 
-### Axe 2 — EXPLOITABILITÉ (le bounty est-il encore gagnable ?)
+### Axis 2 — EXPLOITABILITY (is the bounty still winnable?)
 
-| Status | Signification |
+| Status | Meaning |
 |---|---|
-| 🔒 **PRIS** | une PR fusionnée référence l'issue, ou l'issue est fermée |
-| ⚔️ **CONTESTE** | concurrence active (claims / PR ouvertes) |
-| 🟢 **LIBRE** | aucun claim, aucune PR ouverte |
-| ❔ **INCONNU** | données de concurrence absentes (on n'invente pas) |
+| 🔒 **TAKEN** | a merged PR references the issue, or the issue is closed |
+| ⚔️ **CONTESTED** | active competition (claims / open PRs) |
+| 🟢 **OPEN** | no claim, no open PR |
+| ❔ **UNKNOWN** | competition data missing (we do not invent) |
 
-### Confiance d'authenticité
+### Authenticity confidence
 
-La **confiance d'authenticité** = `10 − note` (affichée en tête). La
-**fiabilité du verdict** (`confidence`) reste /10 et qualifie la qualité des
-données.
+The **authenticity confidence** = `10 − risk score` (shown first). The
+**verdict reliability** (`confidence`) stays /10 and qualifies data quality.
 
-Un verdict peut être **forcé par la mémoire terrain** (`known.json`) :
-« forcé par mémoire terrain » s'affiche alors dans la sortie.
+A verdict can be **forced by field memory** (`known.json`): "forced by field
+memory" is then displayed in the output.
 
-## Les 11 vérifications (poids entre parenthèses, modifiable dans `rules.json`)
+## The 11 checks (weights editable in `rules.json`)
 
-| Check | Poids | Point pénalisant |
+| Check | Weight | Penalizing point |
 |---|---|---|
-| `fork_check` | 1 | le dépôt est un fork GitHub |
-| `account_age` | 10 | compte propriétaire de moins de 30 jours |
-| `stars_check` | 10 | 0 étoile |
-| `issue_number` | 5 | l'issue est la #1 du dépôt |
-| `amount_check` | 2 | montant annoncé ≤ 20 USD |
-| `pattern_check` | 1 | titre commençant par `🎯`, `Fix:` ou `[BOUNTY]` |
-| `reward_link` | 2 | label opire/bounty SANS lien de récompense vérifié |
-| `clone_check` | 4 | repo créé < 7 jours après le compte (clone jetable) |
-| `payment_history` | 3 | revendique une récompense mais aucun historique de paiement |
-| `known_list` | 10 | force PIÈGE (a.k.a. compte piège) ou VRAI (payeur fiable) |
-| `repo_liveness` | 4 | repo inactif (> 90 j) avec bounties orphelins |
+| `fork_check` | 1 | repository is a GitHub fork |
+| `account_age` | 10 | owner account younger than 30 days |
+| `stars_check` | 10 | 0 stars |
+| `issue_number` | 5 | issue is #1 of the repo |
+| `amount_check` | 2 | advertised amount ≤ 20 USD |
+| `pattern_check` | 1 | title starts with `🎯`, `Fix:` or `[BOUNTY]` |
+| `reward_link` | 2 | opire/bounty label WITHOUT a verified reward link |
+| `clone_check` | 4 | repo created < 7 days after the account (throwaway clone) |
+| `payment_history` | 3 | claims a reward but no payment history |
+| `known_list` | 10 | forces TRAP (trap account) or PROVEN_PAYER (reliable payer) |
+| `repo_liveness` | 4 | inactive repo (> 90 d) with orphan bounties |
 
-Note = somme(points × poids) × 10 / somme(poids) (total = 52).
-3 signaux forts (compte récent + 0 étoile + issue #1) suffisent pour PIÈGE
-(≈4.81/10 ≥ seuil 4.7). 2 signaux seuls restent À VÉRIFIER (≈3.85/10).
+Score = sum(points × weight) × 10 / sum(weights) (total = 52).
+3 strong signals (recent account + 0 stars + issue #1) are enough for TRAP
+(≈4.81/10 ≥ threshold 4.7). 2 signals alone stay UNPROVEN (≈3.85/10).
 
-## Concurrence (2026-08-19)
+## Competition (2026-08-19)
 
-En mode `--url`, le collecteur analyse les **commentaires** de l'issue (claims
-via `/claim`, « claiming », « I'll take »…) et les **PR** qui référencent
-l'issue (ouvertes vs fusionnées) pour alimenter l'axe EXPLOITABILITÉ.
+In `--url` mode the collector analyzes the issue **comments** (claims via
+`/claim`, "claiming", "I'll take"…) and the **PRs** referencing the issue
+(open vs merged) to feed the EXPLOITABILITY axis.
 
-## Mémoire terrain (`known.json`)
+## Field memory (`known.json`)
 
-- `known_traps_hashes` : hashs SHA-256 des comptes de l'usine identifiés →
-  verdict PIÈGE forcé. **Stockés en hash, jamais en clair** — la base de
-  données des pièges reste privée (non-divulgation).
-- `known_payers_hashes` : hashs SHA-256 des dépôts ayant réellement payé →
-  verdict PAYEUR PROUVÉ forcé.
-- `known_traps` / `known_payers` : champs **en clair** (optionnels), utilisés
-  par le `--learn` local. Rétro-compatibles.
+- `known_traps_hashes` : SHA-256 hashes of identified trap accounts → forces
+  a TRAP verdict. **Stored as hashes, never in plain text** — the private
+  threat database is never disclosed.
+- `known_payers_hashes` : SHA-256 hashes of repositories that actually paid →
+  forces a PROVEN_PAYER verdict.
+- `known_traps` / `known_payers` : optional plain-text fields, used by local
+  `--learn`. Backward compatible.
 
-L'outil compare les hashs à l'exécution ; il n'a pas besoin de connaître les
-noms en clair pour détecter un piège. La base complète (les noms des comptes)
-est conservée côté Daedalus, jamais publiée ici.
+The tool compares hashes at runtime; it never needs the account names in
+plain text to flag a trap. The full database (real account names) is kept
+private and is not published here.
 
-Mettre à jour au fil des découvertes. Les tests prouvent que les pièges
-NON listés sont détectés par les seuls checks (robustesse).
+## Reward link verification (P1)
 
-## Vérification du lien de récompense (P1)
+In `--url` mode the collector looks for an `opire.dev` (or other supported
+platform) link in the issue body and tries to verify it (page reachable +
+mentions "available"/"reward"/"bounty"). A validated link neutralizes the
+`reward_link` check. In fixture mode, set `reward_verified` (true/false/null)
+per fixture.
 
-En mode `--url`, le collecteur recherche un lien `opire.dev` dans le corps de
-l'issue et tente de le vérifier (page accessible + mention « available »/
-« reward »/« bounty »). Un lien validé neutralise le check `reward_link`.
-En mode fixture, renseigner `reward_verified` (true/false/null) par fixture.
+## Payment history (P2)
 
-## Historique de paiement (P2)
+The collector counts closed issues labeled `💰 Reward` (GitHub `search`
+query). ⚠️ **Factories can forge this history** (observed on factory
+accounts): this signal is only a nuance layer, never proof by itself.
 
-Le collecteur compte les issues fermées avec label `💰 Reward` (requête
-`search` GitHub). ⚠️ **L'usine peut simuler cet historique** (constaté sur
-des comptes de l'usine) : ce signal n'est qu'une
-couche de nuance, jamais une preuve à lui seul.
+## Known limitations (important)
 
-## Limites connues (importantes)
-
-- **L'usine ne crée pas de vrais forks** : dépôts copies → `fork_check` vert,
-  mais les 9 autres checks suffisent.
-- **Pas une certitude** : l'outil donne une probabilité. Toujours lire les
-  commentaires et vérifier l'historique de paiement du dépôt.
-- **Décalage temporel** : `account_age` et `clone_check` dépendent de la date
-  d'exécution ; les fixtures vieillissent (regénérer via capture_fixtures.py).
-- **Un lien vérifié n'absout pas tout** : un compte piège avec un faux lien
-  valide reste PIÈGE par les autres signaux.
+- **Factories do not create real forks**: copies → `fork_check` passes, but
+  the other checks suffice.
+- **Not a certainty**: the tool outputs a probability. Always read the issue
+  and comments, and verify the repository's payment history.
+- **Time drift**: `account_age` and `clone_check` depend on the run date;
+  fixtures age (regenerate via capture_fixtures.py).
+- **A verified link is not absolution**: a trap account with a valid fake
+  link stays TRAP via the other signals.
 
 ## Tests
 
@@ -162,64 +156,44 @@ couche de nuance, jamais une preuve à lui seul.
 python3 -m unittest discover -s tests -v
 ```
 
-- `test_pieges.py` : 5 pièges réels détectés, dont 4 SANS forçage.
-- `test_vrais.py` : 2 vrais (openselfservice, trovu) passent.
-- `test_p1.py` : pondération (2 signaux = À VÉRIFIER, 3 = PIÈGE), forçage
-  mémoire, lien de récompense.
-- `test_p2.py` : clone_check, payment_history, retry/backoff (mock réseau).
-- `test_p3.py` : cas limites (vrai frêle, piège sophistiqué), confiance, veille.
-- `test_axes.py` : deux axes (authenticité / exploitabilité), repo_liveness,
-  piège à historique forgé, concurrence (claims / PR).
-- `test_cli_features.py` : items 7-11 (multi-devises, multi-plateformes,
-  account_age gradué, rapport Markdown, i18n, apprentissage --learn, quota,
-  exit codes, enveloppe JSON v2).
+- `test_pieges.py` : trap fixtures detected, incl. those NOT forced.
+- `test_vrais.py` : legitimate fixtures (openselfservice, trovu) pass.
+- `test_p1.py` : weighting (2 signals = UNPROVEN, 3 = TRAP), memory forcing,
+  reward link.
+- `test_p2.py` : clone_check, payment_history, retry/backoff (mocked network).
+- `test_p3.py` : edge cases (fragile real, sophisticated trap), confidence,
+  watch.
+- `test_axes.py` : two axes (authenticity / exploitability), repo_liveness,
+  forged-history trap, competition (claims / PRs).
+- `test_cli_features.py` : items 7-11 (multi-currency, multi-platform,
+  graduated account_age, Markdown report, i18n, --learn, quota, exit codes,
+  JSON v2).
+- `test_known_hache.py` : hashed memory non-disclosure.
 
-Fixtures réelles capturées via l'API GitHub le 2026-08-18. Régénération :
-`python3 tools/capture_fixtures.py` (consulte github.com : actualise les données).
+Fixtures are anonymized (fictional `trapuser` accounts) and were originally
+captured from real GitHub issues.
 
-## Rapport de confiance (P3)
+## Confidence report (P3)
 
-Chaque verdict inclut une **confiance sur 10** et une recommandation :
-- Confiance basée sur l'exhaustivité des données et la convergence des signaux
-  (forcé par mémoire terrain = 10 ; À VÉRIFIER plafonné à 6).
-- Recommandation : « Ne pas engager de travail… », « Signal fort manquant :
-  account_age… Vérifier la page de récompense… », ou « Tous les signaux sont
-  propres… ».
-
-## Veille multi-repos (P3)
-
-`tools/veille.py` surveille la liste `watchlist.json` et rapporte les issues
-Reward ouvertes analysées (verdict + note + confiance).
-
-```bash
-python3 tools/veille.py [--watchlist watchlist.json] [--json]
-```
-
-Compatible cron : à intégrer comme monitor si besoin.
-
-## Intégration au guetteur (P3)
-
-Le cron « Guetteur openselfservice » (job 1f70d9f842b6) exécute désormais
-Vérif'Bounty sur chaque issue détectée avant toute analyse manuelle, et reste
-silencieux (`[SILENT]`) s'il n'y a aucun nouveau bounty (pas de branche fantôme).
+Each verdict includes a **confidence /10** and a recommendation:
+- Confidence based on data completeness and signal convergence (forced by
+  field memory = 10; UNPROVEN capped at 6).
+- Recommendation: "Do not engage work…", "Missing strong signal: …", or
+  "All signals clean…".
 
 ## Structure
 
 ```
 verify-bounty/
-├── verify_bounty.py      # CLI (+ modes --json, --list, retry/backoff, GH_TOKEN)
-├── scorer.py             # moteur pondéré + forçage mémoire + confiance
-├── rules.json            # seuils, poids, verdicts
-├── known.json            # mémoire terrain (pièges connus / payeurs fiables)
-├── watchlist.json        # dépôts suivis par le mode veille
-├── checks/               # 11 vérifications, une par fichier
-├── tests/                # unittest + fixtures réelles
-└── tools/                # scripts (capture, enrichissement, veille)
+├── verify_bounty.py      # CLI (+ --json, --list, retry/backoff, GH_TOKEN)
+├── scorer.py             # weighted engine + memory forcing + confidence
+├── rules.json            # thresholds, weights, verdicts
+├── known.json            # field memory (hashed traps / payers)
+├── checks/               # 11 checks, one per file
+├── tests/                # unittest + anonymized fixtures
+└── tools/                # capture, enrichment, watch scripts
 ```
 
-## À faire (en attente de décision humaine)
+## License
 
-- [ ] Décision : outil interne uniquement, ou futur produit (à trancher avec l'utilisateur).
-- [ ] Optionnel : mode « veille » (surveillance récurrente de dépôts).
-- [ ] Optionnel : alerte en temps réel dans le guetteur openselfservice.
-- [ ] P3 envisagés : plus de fixtures (pièges sophistiqués, vrais jeunes), rapport de confiance, intégration guetteur, mode veille multi-repos.
+MIT — see `LICENSE`.
