@@ -117,6 +117,19 @@ repos correctly cleared).
 See [`TERRAIN-VALIDATION.md`](TERRAIN-VALIDATION.md) for the full anonymized
 report.
 
+## Threat reports
+
+We publish our threat research on the fake bounty landscape:
+
+- [`report-usine-opire.md`](report-usine-opire.md) — Threat Report #1: the
+  "Opire $10" fake bounty factory (scale, signature, detection method).
+- [`report-historique-forge.md`](report-historique-forge.md) — Threat Report
+  #2: forged payment history (a luring technique to bypass history checks).
+
+Both reports are anonymized: account names are fictional `trapuser`
+identifiers, so no real account is named and the private threat database is
+never disclosed.
+
 ## Field memory (`known.json`)
 
 - `known_traps_hashes` : SHA-256 hashes of identified trap accounts → forces
