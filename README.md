@@ -105,6 +105,18 @@ Recommendation : Do not engage work on this bounty. Signals: account_age, stars_
 The risk score (0-10) aggregates these weighted signals (thresholds in
 `rules.json`), then **authenticity** and **exploitability** are derived.
 
+## Validation on real issues
+
+Bounty-Shield is validated against **real GitHub issues**, not just fixtures:
+- **Trap accounts** (fake bounty factories) are correctly flagged as `TRAP`
+- **Legitimate repositories** with bounties are **not** falsely condemned
+
+Current result: **13/13 PASS** on real issues (10 traps detected, 3 legitimate
+repos correctly cleared).
+
+See [`TERRAIN-VALIDATION.md`](TERRAIN-VALIDATION.md) for the full anonymized
+report.
+
 ## Field memory (`known.json`)
 
 - `known_traps_hashes` : SHA-256 hashes of identified trap accounts → forces
